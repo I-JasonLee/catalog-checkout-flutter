@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../home/home_page.dart';
+
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
 
@@ -45,7 +47,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "Kami sudah mengirim email verifikasi.\nCek email kamu!",
+              "Cek email kamu untuk verifikasi",
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
