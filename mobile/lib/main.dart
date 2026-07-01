@@ -7,5 +7,25 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Catalog Checkout UTS',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Scaffold(
+        body: Center(
+          child: Text('Firebase Connected'),
+        ),
+      ),
+    );
+  }
 }
