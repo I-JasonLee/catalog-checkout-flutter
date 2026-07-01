@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/auth_provider.dart';
+import 'register_page.dart';
 import 'verify_email_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,7 +35,9 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
               decoration: const InputDecoration(labelText: "Password"),
             ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () async {
                 try {
@@ -58,6 +61,20 @@ class _LoginPageState extends State<LoginPage> {
                 }
               },
               child: const Text("Login"),
+            ),
+
+            const SizedBox(height: 10),
+
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RegisterPage(),
+                  ),
+                );
+              },
+              child: const Text("Belum punya akun? Register"),
             ),
           ],
         ),
