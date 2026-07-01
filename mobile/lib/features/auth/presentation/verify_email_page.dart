@@ -17,19 +17,22 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     user?.sendEmailVerification();
   }
 
-  Future<void> checkEmailVerified() async {
+  Future<void> checkVerification() async {
     await user?.reload();
+
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
       if (context.mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const Scaffold(
-              body: Center(child: Text("Login Success")),
-            ),
+            builder: (_) => const HomePage(),
           ),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email belum diverifikasi")),
+      );
     }
   }
 
@@ -41,10 +44,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Cek email kamu untuk verifikasi"),
+            const Text(
+              "Kami sudah mengirim email verifikasi.\nCek email kamu!",
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: checkEmailVerified,
+              onPressed: checkVerification,
               child: const Text("Saya sudah verifikasi"),
             ),
           ],
