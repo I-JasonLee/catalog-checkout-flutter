@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../cart/provider/cart_provider.dart';
-import '../../auth/model/product_model.dart';
+import '../model/product_model.dart';
 
 class CatalogPage extends StatelessWidget {
   CatalogPage({super.key});
