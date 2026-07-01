@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
 import 'features/auth/provider/auth_provider.dart';
+import 'features/auth/presentation/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,17 +24,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Catalog Checkout UTS',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const Scaffold(
-          body: Center(
-            child: Text('Firebase Connected - Auth Ready'),
-          ),
-        ),
+        home: LoginPage(),
       ),
     );
   }
