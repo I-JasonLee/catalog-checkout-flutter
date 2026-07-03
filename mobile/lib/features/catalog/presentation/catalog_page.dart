@@ -1,41 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../cart/provider/cart_provider.dart';
+import '../data/product_dummy.dart';
 import '../model/product_model.dart';
 
 class CatalogPage extends StatelessWidget {
-  CatalogPage({super.key});
-
-  final List<ProductModel> products = [
-    ProductModel(id: "1", name: "Mouse Gaming", price: 150000),
-    ProductModel(id: "2", name: "Keyboard Mechanical", price: 350000),
-    ProductModel(id: "3", name: "Headset", price: 200000),
-  ];
+  const CatalogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
+    final List<ProductModel> products = ProductDummy.products;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Catalog"),
+        title: const Text("Catalog Product"),
       ),
       body: ListView.builder(
         itemCount: products.length,
         itemBuilder: (context, index) {
-          final item = products[index];
+          final product = products[index];
 
           return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: ListTile(
-              title: Text(item.name),
-              subtitle: Text("Rp ${item.price}"),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  cart.addToCart(item);
-                },
-                child: const Text("Add"),
-              ),
+              title: Text(product.name),
+              subtitle: Text("Rp ${product.price}"),
+              trailing: const Icon(Icons.add_shopping_cart),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("${product.name} dipilih"),
+                  ),
+                );
+              },
             ),
           );
         },
