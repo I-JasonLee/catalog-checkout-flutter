@@ -4,7 +4,7 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'features/auth/provider/auth_provider.dart';
+import 'features/auth/provider/auth_provider.dart' as app;
 import 'features/auth/presentation/login_page.dart';
 import 'features/auth/presentation/verify_email_page.dart';
 import 'features/home/home_page.dart';
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => app.AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
