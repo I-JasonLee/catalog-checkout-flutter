@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../catalog/presentation/catalog_page.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -7,8 +9,18 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Home")),
-      body: const Center(
-        child: Text("Login Success 🎉"),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CatalogPage(),
+              ),
+            );
+          },
+          child: const Text("Go to Catalog"),
+        ),
       ),
     );
   }
