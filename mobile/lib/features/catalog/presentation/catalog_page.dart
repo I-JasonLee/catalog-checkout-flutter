@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/product_dummy.dart';
 import '../model/product_model.dart';
 import '../../cart/provider/cart_provider.dart';
+import '../../cart/presentation/cart_page.dart';
 
 class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
@@ -16,6 +17,19 @@ class CatalogPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Catalog"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CartPage(),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: ListView.builder(
         itemCount: products.length,
@@ -29,6 +43,7 @@ class CatalogPage extends StatelessWidget {
               icon: const Icon(Icons.add),
               onPressed: () {
                 cart.addToCart(product);
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("${product.name} added")),
                 );
