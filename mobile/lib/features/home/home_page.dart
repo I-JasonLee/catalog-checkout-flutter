@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../catalog/presentation/catalog_page.dart';
 import '../cart/presentation/cart_page.dart';
+import '../auth/presentation/login_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -19,7 +22,19 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const CartPage()),
               );
             },
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
+          ),
         ],
       ),
       body: Center(
