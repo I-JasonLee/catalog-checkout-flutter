@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'features/auth/provider/auth_provider.dart';
 import 'features/auth/presentation/login_page.dart';
+import 'features/auth/presentation/verify_email_page.dart';
+import 'features/home/home_page.dart';
 import 'features/cart/provider/cart_provider.dart';
 
 void main() async {
@@ -26,9 +29,30 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LoginPage(),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final user = snapshot.data;
+
+            if (user == null) {
+              return const LoginPage();
+            }
+
+            if (!user.emailVerified) {
+              return const VerifyEmailPage();
+            }
+
+            return const HomePage();
+          },
+        ),
       ),
     );
   }
