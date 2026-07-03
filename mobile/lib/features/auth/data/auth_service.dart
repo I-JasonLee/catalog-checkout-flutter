@@ -28,6 +28,11 @@ class AuthService {
     return result.user;
   }
 
+  Future<String?> getFirebaseToken() async {
+    final user = _auth.currentUser;
+    return await user?.getIdToken();
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
   }
