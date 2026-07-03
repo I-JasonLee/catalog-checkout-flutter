@@ -17,23 +17,27 @@ class CartPage extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: cart.items.length,
-              itemBuilder: (context, index) {
-                final item = cart.items[index];
+            child: cart.items.isEmpty
+                ? const Center(
+                    child: Text("Cart kosong"),
+                  )
+                : ListView.builder(
+                    itemCount: cart.items.length,
+                    itemBuilder: (context, index) {
+                      final item = cart.items[index];
 
-                return ListTile(
-                  title: Text(item.name),
-                  subtitle: Text("Rp ${item.price}"),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      cart.removeFromCart(item);
+                      return ListTile(
+                        title: Text(item.name),
+                        subtitle: Text("Rp ${item.price}"),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            cart.removeFromCart(item);
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           ),
 
           Container(
@@ -45,14 +49,21 @@ class CartPage extends StatelessWidget {
                   style: const TextStyle(fontSize: 20),
                 ),
                 const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    cart.clearCart();
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Checkout Success")),
-                    );
-                  },
+                ElevatedButton(
+                  onPressed: cart.items.isEmpty
+                      ? null
+                      : () {
+                          cart.clearCart();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Checkout Success 🎉"),
+                            ),
+                          );
+
+                          Navigator.pop(context);
+                        },
                   child: const Text("Checkout"),
                 )
               ],
