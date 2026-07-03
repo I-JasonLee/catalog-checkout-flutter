@@ -26,56 +26,41 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
-            ),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: "Password"),
-            ),
+            TextField(controller: emailController),
+            TextField(controller: passwordController, obscureText: true),
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await auth.login(
-                    emailController.text,
-                    passwordController.text,
-                  );
+            auth.isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () async {
+                      await auth.login(
+                        emailController.text,
+                        passwordController.text,
+                      );
 
-                  if (context.mounted) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const VerifyEmailPage(),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString())),
-                  );
-                }
-              },
-              child: const Text("Login"),
-            ),
-
-            const SizedBox(height: 10),
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const VerifyEmailPage(),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text("Login"),
+                  ),
 
             TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const RegisterPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const RegisterPage()),
                 );
               },
-              child: const Text("Belum punya akun? Register"),
-            ),
+              child: const Text("Register"),
+            )
           ],
         ),
       ),
