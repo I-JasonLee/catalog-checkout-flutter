@@ -10,6 +10,8 @@ import 'features/auth/presentation/verify_email_page.dart';
 import 'features/home/home_page.dart';
 import 'features/cart/provider/cart_provider.dart';
 
+import 'features/catalog/provider/catalog_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => app.AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => CatalogProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

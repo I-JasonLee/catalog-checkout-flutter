@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../data/auth_service.dart';
 import '../../../core/api/backend_service.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final BackendService _backendService = BackendService();
@@ -42,6 +44,9 @@ class AuthProvider extends ChangeNotifier {
       }
 
       jwtToken = await _backendService.loginToBackend(firebaseToken);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("jwt_token", jwtToken!);
 
       print("🔥 JWT TOKEN:");
       print(jwtToken);

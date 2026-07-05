@@ -1,57 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../data/product_dummy.dart';
-import '../model/product_model.dart';
-import '../../cart/provider/cart_provider.dart';
-import '../../cart/presentation/cart_page.dart';
+import '../provider/catalog_provider.dart';
 
-class CatalogPage extends StatelessWidget {
+// import 'package:provider/provider.dart';
+import '../../cart/provider/cart_provider.dart';
+
+class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
 
   @override
+  State<CatalogPage> createState() => _CatalogPageState();
+}
+
+class _CatalogPageState extends State<CatalogPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<CatalogProvider>().loadProducts();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final products = ProductDummy.products;
-    final cart = Provider.of<CartProvider>(context);
+    final provider = Provider.of<CatalogProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Catalog"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const CartPage(),
-                ),
-              );
-            },
-          )
-        ],
       ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: provider.products.length,
+              itemBuilder: (context, index) {
+                final item = provider.products[index];
 
-          return ListTile(
-            title: Text(product.name),
-            subtitle: Text("Rp ${product.price}"),
-            trailing: IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                cart.addToCart(product);
+                return Card(
+                  child: ListTile(
+                    title: Text(item["name"]),
+                    subtitle: Text("Rp ${item["price"]}"),
+                    trailing: const Icon(Icons.add_shopping_cart),
+                    onTap: () {
+                      context.read<CartProvider>().addToCart(item);
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("${product.name} added")),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("${item["name"]} ditambahkan"),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),
-          );
-        },
-      ),
     );
   }
 }

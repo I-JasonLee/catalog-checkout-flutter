@@ -27,8 +27,8 @@ class CartPage extends StatelessWidget {
                       final item = cart.items[index];
 
                       return ListTile(
-                        title: Text(item.name),
-                        subtitle: Text("Rp ${item.price}"),
+                        title: Text(item["name"]),
+                        subtitle: Text("Rp ${item["price"]}"),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
