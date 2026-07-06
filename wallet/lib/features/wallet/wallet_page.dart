@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/deeplink_service.dart';
 
+import 'pin_dialog.dart';
+
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
 
