@@ -1,56 +1,92 @@
 import 'package:flutter/material.dart';
+import '../../services/deeplink_service.dart';
 
-class WalletPage extends StatelessWidget {
+class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
+
+  @override
+  State<WalletPage> createState() => _WalletPageState();
+}
+
+class _WalletPageState extends State<WalletPage> {
+  final DeeplinkService _deeplinkService = DeeplinkService();
+
+  String status = "Menunggu transaksi...";
+  String amount = "0";
+  String transactionId = "-";
+
+  @override
+  void initState() {
+    super.initState();
+
+    _deeplinkService.init((uri) {
+      if (!mounted) return;
+
+      setState(() {
+        amount = uri.queryParameters['amount'] ?? "0";
+        transactionId = uri.queryParameters['transactionId'] ?? "-";
+        status = "Menerima pembayaran dari Merchant";
+      });
+
+      _showPaymentDialog();
+    });
+  }
+
+  void _showPaymentDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Payment Request"),
+        content: Text(
+          "Bayar Rp $amount untuk transaksi $transactionId ?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+
+              setState(() {
+                status = "Pembayaran berhasil ✅";
+              });
+            },
+            child: const Text("Bayar"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _deeplinkService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("E-Money Wallet"),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text("Wallet")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Saldo Anda",
-              style: TextStyle(fontSize: 18),
+              "E-Money Wallet",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
+            const SizedBox(height: 20),
+
+            Text("Status: $status"),
             const SizedBox(height: 10),
 
-            Container(
-              padding: const EdgeInsets.all(20),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                "Rp 5.000.000",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            const Text(
-              "Status",
-              style: TextStyle(fontSize: 18),
-            ),
-
-            const SizedBox(height: 10),
-
-            const Text(
-              "Menunggu pembayaran dari Merchant...",
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text("Amount: Rp $amount"),
+            Text("Transaction ID: $transactionId"),
           ],
         ),
       ),
