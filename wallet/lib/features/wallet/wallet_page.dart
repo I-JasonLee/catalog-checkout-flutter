@@ -48,12 +48,28 @@ class _WalletPageState extends State<WalletPage> {
             child: const Text("Batal"),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
 
-              setState(() {
-                status = "Pembayaran berhasil ✅";
-              });
+              final isValid = await PinDialog.show(context);
+
+              if (isValid) {
+                setState(() {
+                  status = "Pembayaran berhasil ✅";
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("2FA Success - Payment Approved"),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("PIN salah ❌"),
+                  ),
+                );
+              }
             },
             child: const Text("Bayar"),
           ),
