@@ -1,113 +1,171 @@
 import 'package:flutter/material.dart';
-import '../../services/deeplink_service.dart';
+import 'package:provider/provider.dart';
 
-import 'pin_dialog.dart';
+import 'provider/wallet_provider.dart';
 
-class WalletPage extends StatefulWidget {
+
+class WalletPage extends StatelessWidget {
+
   const WalletPage({super.key});
 
-  @override
-  State<WalletPage> createState() => _WalletPageState();
-}
-
-class _WalletPageState extends State<WalletPage> {
-  final DeeplinkService _deeplinkService = DeeplinkService();
-
-  String status = "Menunggu transaksi...";
-  String amount = "0";
-  String transactionId = "-";
-
-  @override
-  void initState() {
-    super.initState();
-
-    _deeplinkService.init((uri) {
-      if (!mounted) return;
-
-      setState(() {
-        amount = uri.queryParameters['amount'] ?? "0";
-        transactionId = uri.queryParameters['transactionId'] ?? "-";
-        status = "Menerima pembayaran dari Merchant";
-      });
-
-      _showPaymentDialog();
-    });
-  }
-
-  void _showPaymentDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Payment Request"),
-        content: Text(
-          "Bayar Rp $amount untuk transaksi $transactionId ?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-
-              final isValid = await PinDialog.show(context);
-
-              if (isValid) {
-                setState(() {
-                  status = "Pembayaran berhasil ✅";
-                });
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("2FA Success - Payment Approved"),
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("PIN salah ❌"),
-                  ),
-                );
-              }
-            },
-            child: const Text("Bayar"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _deeplinkService.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+
+
+    final wallet = Provider.of<WalletProvider>(context);
+
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Wallet")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "E-Money Wallet",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
 
-            const SizedBox(height: 20),
-
-            Text("Status: $status"),
-            const SizedBox(height: 10),
-
-            Text("Amount: Rp $amount"),
-            Text("Transaction ID: $transactionId"),
-          ],
+      appBar: AppBar(
+        title: const Text(
+          "E-Money Wallet",
         ),
       ),
+
+
+      body: Padding(
+
+        padding: const EdgeInsets.all(20),
+
+        child: Column(
+
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+
+          children: [
+
+
+            const Text(
+              "Saldo Wallet",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+
+
+            const SizedBox(height: 10),
+
+
+
+            Text(
+
+              "Rp ${wallet.balance}",
+
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+
+            ),
+
+
+
+            const SizedBox(height: 40),
+
+
+
+            const Text(
+
+              "Status Transaksi",
+
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+
+            ),
+
+
+
+            const SizedBox(height: 10),
+
+
+
+            Container(
+
+              width: double.infinity,
+
+              padding: const EdgeInsets.all(16),
+
+
+              decoration: BoxDecoration(
+
+                borderRadius: BorderRadius.circular(12),
+
+                color: Colors.grey.shade200,
+
+              ),
+
+
+              child: Column(
+
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+
+                children: [
+
+
+                  Text(
+
+                    wallet.transaction == null
+
+                        ? "Menunggu Transaksi"
+
+                        : wallet.transaction!.status,
+
+                  ),
+
+
+
+                  const SizedBox(height: 10),
+
+
+
+                  Text(
+
+                    wallet.transaction == null
+
+                        ? "Amount: Rp 0"
+
+                        : "Amount: Rp ${wallet.transaction!.amount}",
+
+                  ),
+
+
+
+                  const SizedBox(height: 10),
+
+
+
+                  Text(
+
+                    wallet.transaction == null
+
+                        ? "Transaction ID: -"
+
+                        : "Transaction ID: ${wallet.transaction!.transactionId}",
+
+                  ),
+
+
+                ],
+
+              ),
+
+            ),
+
+
+
+          ],
+
+        ),
+
+      ),
+
     );
+
   }
+
 }

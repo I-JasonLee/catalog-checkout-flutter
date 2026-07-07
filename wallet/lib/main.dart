@@ -1,18 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'features/wallet/wallet_page.dart';
+import 'features/wallet/provider/wallet_provider.dart';
+
 
 void main() {
-  runApp(const WalletApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => WalletProvider(),
+        ),
+      ],
+      child: const WalletApp(),
+    ),
+  );
 }
+
 
 class WalletApp extends StatelessWidget {
   const WalletApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: "Wallet App",
+
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+
       home: const WalletPage(),
     );
   }
