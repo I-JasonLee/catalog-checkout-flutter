@@ -7,6 +7,10 @@ import '../../services/deeplink_service.dart';
 import 'set_pin_page.dart';
 import 'services/pin_service.dart';
 
+import 'services/payment_service.dart';
+
+import 'services/callback_service.dart';
+
 class WalletPage extends StatefulWidget {
 
   const WalletPage({super.key});
@@ -30,35 +34,39 @@ class _WalletPageState extends State<WalletPage> {
   void initState() {
     super.initState();
 
-
     _deeplinkService.init((uri){
 
       if(uri.scheme == "wallet" &&
-          uri.host == "payment"){
-
-
+        uri.host == "payment"){
         final amount = int.parse(
           uri.queryParameters["amount"] ?? "0",
         );
-
-
         final transactionId =
             uri.queryParameters["transactionId"] ?? "-";
-
-
-
-        Provider.of<WalletProvider>(
-          context,
-          listen: false,
-        ).setTransaction(
-
+        final token =
+            uri.queryParameters["token"];
+        final walletProvider =
+            Provider.of<WalletProvider>(
+              context,
+              listen:false,
+            );
+        walletProvider.setTransaction(
           transactionId: transactionId,
-
           amount: amount,
-
         );
+        if(token != null){
 
+          print("🔥 TOKEN DARI MERCHANT:");
+          print(token);
 
+          walletProvider.setToken(token);
+
+        }
+        else{
+
+          print("❌ TOKEN TIDAK DIKIRIM MERCHANT");
+
+        }
       }
 
     });
@@ -297,9 +305,45 @@ wallet.transaction == null
 
                 if(correct){
 
-                  wallet.pay();
 
-                }
+   final transactionId =
+      wallet.transaction!.transactionId;
+
+
+  final amount =
+      wallet.transaction!.amount;
+
+
+
+  final success =
+      wallet.pay();
+
+
+  if(success &&
+      wallet.jwtToken != null){
+
+
+    final apiSuccess = await PaymentService().payment(
+  transactionId: transactionId,
+  amount: amount,
+  token: wallet.jwtToken!,
+);
+
+if (apiSuccess) {
+
+  await CallbackService().sendResult(
+    transactionId: transactionId,
+    amount: amount,
+    success: true,
+  );
+
+}
+
+
+  }
+
+
+}
 
                 else{
 

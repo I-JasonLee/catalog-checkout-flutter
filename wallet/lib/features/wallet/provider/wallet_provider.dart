@@ -11,6 +11,15 @@ class WalletProvider extends ChangeNotifier {
 
   TransactionModel? transaction;
 
+  String? jwtToken;
+
+   void setToken(String token) {
+
+    jwtToken = token;
+
+    notifyListeners();
+
+  }
 
   // menerima request pembayaran dari merchant
   void setTransaction({
