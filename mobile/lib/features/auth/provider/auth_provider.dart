@@ -74,6 +74,22 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+   // 🧠 LOAD JWT SAAT APP DIBUKA ULANG
+  Future<void> loadToken() async {
+
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    jwtToken =
+        prefs.getString("jwt_token");
+
+    print("🔥 JWT DARI STORAGE:");
+    print(jwtToken);
+
+    notifyListeners();
+
+  }
+
   // 🚪 LOGOUT
   Future<void> logout() async {
     await _authService.logout();

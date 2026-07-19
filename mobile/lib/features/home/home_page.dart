@@ -1,14 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
 import '../catalog/presentation/catalog_page.dart';
 import '../cart/presentation/cart_page.dart';
 import '../auth/presentation/login_page.dart';
 import '../cart/provider/cart_provider.dart';
+import '../../../services/merchant_deeplink_service.dart';
+import '../transaction/presentation/transaction_page.dart';
+import '../transaction/provider/transaction_provider.dart';
+import '../transaction/model/transaction_model.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final MerchantDeeplinkService _deeplinkService =
+      MerchantDeeplinkService();
+
+  @override
+void initState() {
+  super.initState();
+  Future.microtask(() async {
+    await _deeplinkService.init((uri) {
+      print("=== CALLBACK ===");
+      print(uri.toString());
+      if (uri.scheme == "merchant" &&
+          uri.host == "payment-result") {
+        print("CALLBACK DITERIMA");
+        final status =
+            uri.queryParameters["status"] ?? "failed";
+        final transactionId =
+            uri.queryParameters["transactionId"] ?? "-";
+        final amount =
+            int.parse(
+              uri.queryParameters["amount"] ?? "0",
+            );
+        print(status);
+        print(transactionId);
+        print(amount);
+        Provider.of<TransactionProvider>(
+          context,
+          listen: false,
+        ).addTransaction(
+          TransactionModel(
+            transactionId: transactionId,
+            amount: amount,
+            status: status,
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              status == "success"
+              ? "✅ Pembayaran Berhasil\nTransaction ID : $transactionId"
+              : "❌ Pembayaran Gagal\nTransaction ID : $transactionId",
+            ),
+          ),
+        );
+      }
+    });
+  });
+}
+
+  @override
+  void dispose() {
+    _deeplinkService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +80,6 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home"),
         actions: [
-          // 🛒 CART BADGE
           Stack(
             children: [
               IconButton(
@@ -26,7 +87,9 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const CartPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const CartPage(),
+                    ),
                   );
                 },
               ),
@@ -52,7 +115,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
 
-          // 🚪 LOGOUT
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -60,7 +122,9 @@ class HomePage extends StatelessWidget {
 
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
+                MaterialPageRoute(
+                  builder: (_) => const LoginPage(),
+                ),
                 (route) => false,
               );
             },
@@ -69,14 +133,37 @@ class HomePage extends StatelessWidget {
       ),
 
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CatalogPage()),
-            );
-          },
-          child: const Text("Go to Catalog"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CatalogPage(),
+                  ),
+                );
+              },
+              child: const Text("Go to Catalog"),
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const TransactionPage(),
+                  ),
+                );
+              },
+              child: const Text("Status Transaksi"),
+            ),
+
+          ],
         ),
       ),
     );

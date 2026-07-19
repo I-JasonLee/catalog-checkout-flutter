@@ -3,20 +3,36 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../provider/cart_provider.dart';
+import '../../auth/provider/auth_provider.dart';
 
-Future<void> openWalletPayment(int amount) async {
+Future<void> openWalletPayment(
+    int amount,
+    String token,
+) async {
+
+
   final uri = Uri.parse(
-    "wallet://payment?amount=$amount&transactionId=123",
+    "wallet://payment"
+    "?amount=$amount"
+    "&transactionId=123"
+    "&token=$token",
   );
+
 
   final success = await launchUrl(
     uri,
     mode: LaunchMode.externalApplication,
   );
 
-  if (!success) {
-    print("Gagal membuka Wallet");
+
+  if(!success){
+
+    print(
+      "Gagal membuka Wallet",
+    );
+
   }
+
 }
 
 class CartPage extends StatelessWidget {
@@ -67,8 +83,37 @@ class CartPage extends StatelessWidget {
 
                 ElevatedButton(
                   onPressed: () {
-                    openWalletPayment(cart.totalPrice);
-                  },
+
+
+  final auth =
+  Provider.of<AuthProvider>(
+    context,
+    listen:false,
+  );
+
+
+  if(auth.jwtToken != null){
+
+    print("JWT DI CART:");
+print(auth.jwtToken);
+
+    openWalletPayment(
+      cart.totalPrice,
+      auth.jwtToken!,
+    );
+
+
+  }
+  else{
+
+    print(
+      "JWT belum tersedia"
+    );
+
+  }
+
+
+},
                   child: const Text("Bayar dengan Wallet"),
                 ),
 
