@@ -37,3 +37,5 @@ class WalletApp extends StatelessWidget {
     );
   }
 }
+
+// Reset Saldo : adb shell pm clear com.example.wallet
