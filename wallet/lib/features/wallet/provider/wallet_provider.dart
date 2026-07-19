@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../model/transaction_model.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletProvider extends ChangeNotifier {
 
@@ -63,6 +62,7 @@ class WalletProvider extends ChangeNotifier {
     // potong saldo
     balance -= transaction!.amount;
 
+    saveBalance();
 
     transaction = TransactionModel(
       transactionId: transaction!.transactionId,
@@ -75,6 +75,23 @@ class WalletProvider extends ChangeNotifier {
 
 
     return true;
+  }
+
+  Future<void> loadBalance() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    balance = prefs.getInt("wallet_balance") ?? 1000000;
+
+    notifyListeners();
+  }
+
+  Future<void> saveBalance() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(
+      "wallet_balance",
+      balance,
+    );
   }
 
 }
