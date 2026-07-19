@@ -80,7 +80,15 @@ class WalletProvider extends ChangeNotifier {
   Future<void> loadBalance() async {
     final prefs = await SharedPreferences.getInstance();
 
-    balance = prefs.getInt("wallet_balance") ?? 1000000;
+    if (prefs.containsKey("wallet_balance")) {
+      balance = prefs.getInt("wallet_balance")!;
+    } else {
+      balance = 1000000;
+      await prefs.setInt(
+        "wallet_balance",
+        balance,
+      );
+    }
 
     notifyListeners();
   }
@@ -92,6 +100,19 @@ class WalletProvider extends ChangeNotifier {
       "wallet_balance",
       balance,
     );
+  }
+
+    Future<void> resetBalance() async {
+    balance = 1000000;
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(
+      "wallet_balance",
+      balance,
+    );
+
+    notifyListeners();
   }
 
 }

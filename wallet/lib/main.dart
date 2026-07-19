@@ -10,11 +10,17 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => WalletProvider(),
+          create: (_) {
+            final provider = WalletProvider();
+
+            provider.loadBalance();
+
+            return provider;
+          },
         ),
       ],
       child: const WalletApp(),
-    ),
+    )
   );
 }
 
