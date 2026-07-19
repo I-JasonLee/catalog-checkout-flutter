@@ -110,4 +110,14 @@ class WalletProvider extends ChangeNotifier {
     balance = prefs.getInt("balance") ?? 1000000;
     notifyListeners();
   }
+
+  Future<void> topUp(int amount) async {
+    balance += amount;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      "balance",balance,
+    );
+    notifyListeners();
+  }
+  
 }

@@ -7,6 +7,7 @@ import 'services/pin_service.dart';
 import 'services/payment_service.dart';
 import 'services/callback_service.dart';
 import 'transaction_history_page.dart';
+import 'topup_page.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
@@ -91,11 +92,30 @@ class _WalletPageState extends State<WalletPage> {
               child: const Text(
                 "Buat PIN Wallet",
               ),
+
             ),
             const Text(
               "Payment Request",
               style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height:10),
+
+            ElevatedButton(
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:(context)=>
+                    const TopUpPage(),
+                  ),
+                );
+              },
+              child:
+              const Text(
+                "Top Up Saldo",
               ),
             ),
 
