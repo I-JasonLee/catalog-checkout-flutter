@@ -1,118 +1,113 @@
 import 'package:flutter/material.dart';
-import '../model/transaction_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../model/transaction_model.dart';
 
 class WalletProvider extends ChangeNotifier {
-
-  // saldo awal wallet
   int balance = 1000000;
-
-
   TransactionModel? transaction;
-
   String? jwtToken;
-
-   void setToken(String token) {
-
+  void setToken(String token){
     jwtToken = token;
-
     notifyListeners();
-
   }
 
-  // menerima request pembayaran dari merchant
+  // HISTORY TRANSAKSI
+  List<TransactionModel> history = [];
+
+  // =========================
+  // TERIMA REQUEST PEMBAYARAN
+  // =========================
+
   void setTransaction({
     required String transactionId,
     required int amount,
-  }) {
-
+  })
+  {
     transaction = TransactionModel(
       transactionId: transactionId,
       amount: amount,
       status: "Menunggu Pembayaran",
+      date: DateTime.now().toString(),
     );
-
-
     notifyListeners();
   }
 
+  // =========================
+  // LOAD HISTORY
+  // =========================
 
-
-  // proses pembayaran setelah PIN benar
-  bool pay() {
-
-    if(transaction == null){
-      return false;
+  Future<void> loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getStringList("transaction_history");
+    if(data != null){
+      history = data.map((item){
+          final split = item.split("|");
+          return TransactionModel(
+            transactionId: split[0],
+            amount: int.parse(split[1]),
+            status: split[2],
+            date: split[3],
+          );
+        }).toList();
     }
+    notifyListeners();
+  }
 
+  // =========================
+  // SIMPAN HISTORY
+  // =========================
 
+  Future<void> saveHistory(
+      TransactionModel transaction
+  ) async {
+    history.insert(0, transaction,);
+    final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(
+        "transaction_history", history.map(
+          (e)=> "${e.transactionId}|${e.amount}|${e.status}|${e.date}"
+        ).toList(),
+      );
+    notifyListeners();
+  }
+
+  // =========================
+  // BAYAR
+  // =========================
+
+  Future<bool> pay() async {
+    if(transaction == null){return false;}
     if(balance < transaction!.amount){
       transaction = TransactionModel(
         transactionId: transaction!.transactionId,
         amount: transaction!.amount,
         status: "Saldo Tidak Cukup",
+        date: DateTime.now().toString(),
       );
-
       notifyListeners();
-
       return false;
     }
-
-
-    // potong saldo
+    // Kurangi Saldo
     balance -= transaction!.amount;
-
-    saveBalance();
-
-    transaction = TransactionModel(
+    // Simpan Saldo
+      final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt("balance", balance,);
+    // Update Transaksi Berhasil
+    transaction =
+    TransactionModel(
       transactionId: transaction!.transactionId,
       amount: transaction!.amount,
       status: "Pembayaran Berhasil",
+      date: DateTime.now().toString(),
     );
-
-
+    // Simpan History
+    await saveHistory(transaction!);
     notifyListeners();
-
-
     return true;
   }
 
   Future<void> loadBalance() async {
     final prefs = await SharedPreferences.getInstance();
-
-    if (prefs.containsKey("wallet_balance")) {
-      balance = prefs.getInt("wallet_balance")!;
-    } else {
-      balance = 1000000;
-      await prefs.setInt(
-        "wallet_balance",
-        balance,
-      );
-    }
-
+    balance = prefs.getInt("balance") ?? 1000000;
     notifyListeners();
   }
-
-  Future<void> saveBalance() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setInt(
-      "wallet_balance",
-      balance,
-    );
-  }
-
-    Future<void> resetBalance() async {
-    balance = 1000000;
-
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setInt(
-      "wallet_balance",
-      balance,
-    );
-
-    notifyListeners();
-  }
-
 }

@@ -12,11 +12,10 @@ void main() {
         ChangeNotifierProvider(
           create: (_) {
             final provider = WalletProvider();
-
             provider.loadBalance();
-
+            provider.loadHistory();
             return provider;
-          },
+          }
         ),
       ],
       child: const WalletApp(),
@@ -24,23 +23,16 @@ void main() {
   );
 }
 
-
 class WalletApp extends StatelessWidget {
   const WalletApp({super.key});
-
-
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       title: "Wallet App",
-
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-
       home: const WalletPage(),
     );
   }
