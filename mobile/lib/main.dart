@@ -41,7 +41,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => CatalogProvider()),
-        ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) {
+          final provider = TransactionProvider();
+          provider.loadTransactions();
+            return provider;
+          },
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

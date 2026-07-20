@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
 void initState() {
   super.initState();
   Future.microtask(() async {
-    await _deeplinkService.init((uri) {
+    await _deeplinkService.init((uri) async {
       print("=== CALLBACK ===");
       print(uri.toString());
       if (uri.scheme == "merchant" &&
@@ -42,7 +42,7 @@ void initState() {
         print(status);
         print(transactionId);
         print(amount);
-        Provider.of<TransactionProvider>(
+        await Provider.of<TransactionProvider>(
           context,
           listen: false,
         ).addTransaction(
